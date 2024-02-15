@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" th:href="@{/css/authentication-registration.css}"/>
+    <link rel="stylesheet" th:href="@{/css/switch.css}"/>
+    <script th:src="@{/js/auth.js}"></script>
+    <title>Анализатор финансов</title>
+</head>
+<body>
+<div class="authorization">
+    <div class="main-container">
+        <form class="form-container" method="post">
+            <p>Вход через никнейм или email</p>
+            <div class="user-block">
+                <input type="text" name="username" id="username" placeholder="Логин" class="user-info"/>
+                <input type="password" name="password" id="password" placeholder="Пароль" class="user-info"/>
+            </div>
+            <button type="button" onclick="signIn()">Авторизоваться</button>
+            <p>Вход через социальные сети</p>
+            <div class="button-link">
+                <button><img th:src="@{/images/authentication/google-icon.svg}"/></button>
+                <button><img th:src="@{/images/authentication/yandex-icon.svg}"/></button>
+                <button><img th:src="@{/images/authentication/vk-icon.svg}"/></button>
+            </div>
+            <p>У вас нет аккаунта? <a href="/auth/signUp" class="text-link"> Зарегистрируйтесь</a></p>
+        </form>
+    </div>
+</div>
+</body>
+</html>
