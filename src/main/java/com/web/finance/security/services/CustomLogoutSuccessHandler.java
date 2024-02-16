@@ -18,10 +18,19 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
     RefreshTokenService refreshTokenService;
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        Cookie cookie = WebUtils.getCookie(request, "RefreshToken");
-        if (cookie != null) {
-            String refreshToken = cookie.getValue();
+        Cookie refreshCookie = WebUtils.getCookie(request, "RefreshToken");
+        if (refreshCookie != null) {
+            String refreshToken = refreshCookie.getValue();
             refreshTokenService.deleteRefreshToken(refreshTokenService.findByToken(refreshToken));
+        }
+
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                cookie.setMaxAge(0);
+                cookie.setPath("/");
+                response.addCookie(cookie);
+            }
         }
         response.sendRedirect("/auth/signIn");
     }

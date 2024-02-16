@@ -69,12 +69,16 @@ public class WebSecurityConfig {
                             .anyRequest().authenticated();
                 })
                 .logout(logout -> {
-                    logout.logoutUrl("/auth/logout");
-                    logout.logoutSuccessHandler(customLogoutSuccessHandler);
-                    logout.deleteCookies("AccessToken", "RefreshToken");
+                    logout
+                            .logoutUrl("/auth/logout")
+                            .logoutSuccessHandler(customLogoutSuccessHandler);
                 })
                 .exceptionHandling(exception -> {
-                    exception.authenticationEntryPoint(unauthorizedHandler);
+                    exception
+                            .authenticationEntryPoint(unauthorizedHandler)
+                            .accessDeniedHandler((request, response, accessDeniedException) -> {
+                                response.sendRedirect(request.getContextPath() + "/index");
+                            });
                 })
                 .sessionManagement(sessionManagement -> {
                     sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS);

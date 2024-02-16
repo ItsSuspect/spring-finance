@@ -45,9 +45,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             String jwt = parseJwtToken(request);
             String refreshToken = parseRefreshToken(request);
 
-            authenticationUser(request, jwt);
+            if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+                authenticationUser(request, jwt);
+            }
 
-            if (refreshTokenService.isValidRefreshToken(refreshToken)){
+            else if (refreshTokenService.isValidRefreshToken(refreshToken)){
                 User user = refreshTokenService.findUserByToken(refreshToken);
                 String username = user.getUsername();
                 UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(username);
@@ -61,7 +63,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     response.addCookie(jwtUtils.updateRefreshTokenCookie(cookieRefresh, newRefreshToken.getToken()));
                 }
 
-                authenticationUser(request, cookieJwt.getValue());
+                if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+                    authenticationUser(request, cookieJwt.getValue());
+                }
             }
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e.getMessage());
@@ -71,16 +75,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     }
 
     private void authenticationUser(HttpServletRequest request, String jwt) {
-        if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-            String username = jwtUtils.getUsernameFromJwtToken(jwt);
+        String username = jwtUtils.getUsernameFromJwtToken(jwt);
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
-                    userDetails.getAuthorities());
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
+                userDetails.getAuthorities());
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     private String parseJwtToken(HttpServletRequest request) {

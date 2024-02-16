@@ -1,22 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Описание сайта">
-  <meta name="keywords" content="Ключевые слова">
-  <meta name="language" content="RU, EN">
-  <meta name="author" content="Сидоров Сергей, sergey.4181.s@yandex.ru">
-  <link rel="stylesheet" th:href="@{/css/index.css}" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Анализатор финансов</title>
+  <link rel="stylesheet" th:href="@{/css/index.css}"/>
+  <script th:src="@{https://cdn.jsdelivr.net/npm/chart.js}"></script>
+  <script th:src="@{/js/index.js}"></script>
 </head>
 <body>
 <header>
-  <h1><a id="logo" href = "/">Анализатор финансов</a></h1>
-  <a href="auth/logout">Выйти</a>
+  <div class="logo">Анализатор финансов</div>
+  <div class="icons">
+    <a href="#"><img th:src="@{/images/main/settings.svg}" alt="Настройки"></a>
+    <a href="/auth/logout"><img th:src="@{/images/main/profile.svg}" alt="Профиль"></a>
+  </div>
 </header>
+<main>
+  <div class="left-section">
+    <div class="accounts">
+      <h2>Счета пользователя</h2>
+      <ul th:if="${not #lists.isEmpty(accounts)}">
+        <li th:each="account : ${accounts}">
+          <div class="account-info">
+            <img th:src="@{/images/main/dollar-icon.svg}" alt="Иконка счета">
+            <div class="account-details">
+              <p class="account-name" th:text="${account.name}">Название счета</p>
+              <p class="account-amount" th:text="${account.amount}">Сумма</p>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <p th:unless="${not #lists.isEmpty(accounts)}">На данный момент у вас не существует счетов</p>
+    </div>
+    <hr>
+    <div class="financial-analysis">
+      <h2>Анализ финансов</h2>
+      <canvas id="chart"></canvas>
+    </div>
+  </div>
+  <hr>
+  <div class="right-section section-divider">
+    <h2>Транзакции пользователя</h2>
+    <div class="transactions" th:if="${not #lists.isEmpty(operations)}">
+      <div class="transaction" th:each="operation : ${operations}">
+        <img class="transaction-icon" th:src="@{/images/main/dollar-icon.svg}" alt="Иконка транзакции">
+        <div class="transaction-details">
+          <p class="transaction-name" th:text="${operation.name}">Название операции</p>
+          <p class="transaction-category" th:text="${operation.category}">Категория</p>
+        </div>
+        <div class="transaction-info">
+          <p class="transaction-amount" th:text="${operation.amount}">Сумма</p>
+          <p class="transaction-account" th:text="${operation.account.name}">Счет</p>
+        </div>
+      </div>
+    </div>
+    <p class="no-transactions" th:unless="${not #lists.isEmpty(operations)}">На данный момент у вас не происходило операций на счетах</p>
+  </div>
 
-<!-- Здесь будет остальное содержимое вашего сайта -->
-
+</main>
 </body>
 </html>

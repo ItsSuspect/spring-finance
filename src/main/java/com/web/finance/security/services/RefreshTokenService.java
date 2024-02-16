@@ -34,6 +34,7 @@ public class RefreshTokenService {
         return refreshTokenRepository.findUserByToken(refreshToken);
     }
 
+    //Todo: Добавить обработчик ошибок при ненахождение токена
     public RefreshToken findByToken(String token) {
         return refreshTokenRepository.findByToken(token).get();
     }

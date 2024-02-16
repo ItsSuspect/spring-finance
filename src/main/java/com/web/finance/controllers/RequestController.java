@@ -14,9 +14,4 @@ public class RequestController {
     public String GetSignUp() {
         return "registration";
     }
-
-    @GetMapping("/index")
-    public String index() {
-        return "index";
-    }
 }
