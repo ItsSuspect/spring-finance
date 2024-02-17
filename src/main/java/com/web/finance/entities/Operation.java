@@ -2,6 +2,7 @@ package com.web.finance.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -19,8 +20,11 @@ public class Operation {
     @Size(max = 50)
     private String category;
 
+    @NotNull
+    private int amount = 0;
+
     @NotBlank
-    private int amount;
+    private String type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
@@ -28,6 +32,14 @@ public class Operation {
 
     public Operation() {
 
+    }
+
+    public Operation(String name, String category, int amount, String type, Account account) {
+        this.name = name;
+        this.category = category;
+        this.amount = amount;
+        this.type = type;
+        this.account = account;
     }
 
     public Long getId() {
@@ -68,5 +80,13 @@ public class Operation {
 
     public void setAccount(Account account) {
         this.account = account;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

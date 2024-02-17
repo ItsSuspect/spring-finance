@@ -13,4 +13,5 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
     Set<Operation> findByUsername(String username);
     Set<Operation> findByAccountName(String accountName);
     Set<Operation> findByAccountId(Long accountId);
+    void deleteById(Long id);
 }

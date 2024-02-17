@@ -1,5 +1,6 @@
 package com.web.finance.security.services;
 
+import com.web.finance.entities.Account;
 import com.web.finance.entities.Operation;
 import com.web.finance.repository.OperationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,12 @@ public class OperationService {
         return operationRepository.findByUsername(username);
     }
 
-    public Set<Operation> findOperationByAccountName (String accountName) {
-        return operationRepository.findByAccountName(accountName);
+    public void createOperation(String name, String category, int amount, String type, Account account) {
+        Operation operation = new Operation(name, category, amount, type, account);
+        operationRepository.save(operation);
     }
 
-    public Set<Operation> findOperationByAccountId (Long accountId) {
-        return operationRepository.findByAccountId(accountId);
+    public void deleteOperation(Long id) {
+        operationRepository.deleteById(id);
     }
 }

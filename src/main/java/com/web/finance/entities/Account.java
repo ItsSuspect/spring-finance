@@ -2,6 +2,7 @@ package com.web.finance.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -15,7 +16,10 @@ public class Account {
     @Size(max = 50)
     private String name;
 
-    private int amount;
+    @NotNull
+    private int amount = 0;
+
+    private String currency;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -23,6 +27,13 @@ public class Account {
 
     public Account() {
 
+    }
+
+    public Account(String name, int amount, String currency, User user) {
+        this.name = name;
+        this.amount = amount;
+        this.currency = currency;
+        this.user = user;
     }
 
     public Long getId() {
@@ -47,5 +58,21 @@ public class Account {
 
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
