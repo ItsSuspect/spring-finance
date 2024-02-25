@@ -12,6 +12,6 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
     @Query("SELECT o FROM Operation o JOIN o.account a JOIN a.user u WHERE u.username = :username")
     Set<Operation> findByUsername(String username);
     Set<Operation> findByAccountName(String accountName);
-    Set<Operation> findByAccountId(Long accountId);
+    Operation findOperationById(Long accountId);
     void deleteById(Long id);
 }

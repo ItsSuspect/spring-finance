@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class AccountRequest {
+    private Long accountId;
     @NotBlank
     private String name;
 
@@ -12,6 +13,14 @@ public class AccountRequest {
 
     @NotBlank
     private String currency;
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
+    }
 
     public String getName() {
         return name;

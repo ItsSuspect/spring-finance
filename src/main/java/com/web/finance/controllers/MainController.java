@@ -4,6 +4,7 @@ import com.web.finance.entities.Account;
 import com.web.finance.entities.Operation;
 import com.web.finance.entities.User;
 import com.web.finance.payload.request.AccountRequest;
+import com.web.finance.payload.request.DeleteOperationRequest;
 import com.web.finance.payload.request.OperationRequest;
 import com.web.finance.payload.request.SignInRequest;
 import com.web.finance.payload.response.MessageResponse;
@@ -76,23 +77,102 @@ public class MainController {
         }
         Account account = accountService.findAccountById(operationRequest.getAccountId());
 
-        int amount;
+        int amount = account.getAmount();
         if (operationRequest.getType().equals("income")) {
-            amount = account.getAmount() + operationRequest.getAmount();
-            account.setAmount(amount);
+            amount += operationRequest.getAmount();
         } else {
-            amount = account.getAmount() - operationRequest.getAmount();
-            account.setAmount(amount);
+            amount -= operationRequest.getAmount();
         }
+        account.setAmount(amount);
+
         accountService.saveAccount(account);
         operationService.createOperation(operationRequest.getName(), operationRequest.getCategory(), operationRequest.getAmount(), operationRequest.getType(), account);
         return ResponseEntity.ok(new MessageResponse("Новая операция успешно создана"));
     }
 
+    @PostMapping("/editOperation")
+    public ResponseEntity<?> editOperation(@Valid @RequestBody OperationRequest operationRequest) {
+        Account account = accountService.findAccountById(operationRequest.getAccountId());
+        Operation operation = operationService.findOperationById(operationRequest.getOperationId());
+
+        if (operation.getAmount() != operationRequest.getAmount() && !operation.getType().equals(operationRequest.getType())) {
+            int oldAmount = operation.getAmount();
+            int newAmount = operationRequest.getAmount();
+            int amountDifference = newAmount - oldAmount;
+
+            if (!operation.getType().equals(operationRequest.getType())) {
+                if (operationRequest.getType().equals("income")) {
+                    amountDifference += oldAmount * 2;
+                } else {
+                    amountDifference -= oldAmount * 2;
+                }
+                operation.setType(operationRequest.getType());
+            }
+
+            int accountAmount = account.getAmount();
+            accountAmount += amountDifference;
+            account.setAmount(accountAmount);
+            operation.setAmount(operationRequest.getAmount());
+        }
+        else if (operation.getAmount() != operationRequest.getAmount()) {
+            int amountDifference = operationRequest.getAmount() - operation.getAmount();
+            if (operation.getType().equals("income")) {
+                account.setAmount(account.getAmount() + amountDifference);
+            } else {
+                account.setAmount(account.getAmount() - amountDifference);
+            }
+            operation.setAmount(operationRequest.getAmount());
+        }
+        else if (!operation.getType().equals(operationRequest.getType())) {
+            int amountDifference = operation.getAmount();
+
+            if (operation.getType().equals("income")) {
+                account.setAmount(account.getAmount() - amountDifference * 2);
+            } else {
+                account.setAmount(account.getAmount() + amountDifference * 2);
+            }
+
+            operation.setType(operationRequest.getType());
+        }
+
+        operation.setName(operationRequest.getName());
+        operation.setCategory(operationRequest.getCategory());
+        operation.setAccount(account);
+
+        accountService.saveAccount(account);
+        operationService.saveOperation(operation);
+        return ResponseEntity.ok(new MessageResponse("Операция успешно отредактирована"));
+    }
+
+    @PostMapping("/editAccount")
+    public ResponseEntity<?> editAccount(@Valid @RequestBody AccountRequest accountRequest) {
+        Account account = accountService.findAccountById(accountRequest.getAccountId());
+
+        account.setName(accountRequest.getName());
+        account.setAmount(accountRequest.getAmount());
+        account.setCurrency(accountRequest.getCurrency());
+
+        accountService.saveAccount(account);
+        return ResponseEntity.ok(new MessageResponse("Счет успешно отредактирован"));
+    }
+
+
     @PostMapping("/deleteOperation")
-    public ResponseEntity<?> deleteOperation(@Valid @RequestBody Long id) {
+    public ResponseEntity<?> deleteOperation(@Valid @RequestBody DeleteOperationRequest deleteOperationRequest) {
         try {
-            operationService.deleteOperation(id);
+            Operation operation = operationService.findOperationById(deleteOperationRequest.getId());
+            Account account = operation.getAccount();
+
+            int amount = account.getAmount();
+            if (deleteOperationRequest.getType().equals("income")) {
+                amount -= deleteOperationRequest.getAmount();
+            } else {
+                amount += deleteOperationRequest.getAmount();
+            }
+            account.setAmount(amount);
+
+            accountService.saveAccount(account);
+            operationService.deleteOperation(deleteOperationRequest.getId());
             return ResponseEntity.ok(new MessageResponse("Удаление успешно"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse("Ошибка при удаление операции: " + e.getMessage()));

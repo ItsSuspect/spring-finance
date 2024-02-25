@@ -17,8 +17,16 @@ public class OperationService {
         return operationRepository.findByUsername(username);
     }
 
+    public Operation findOperationById(Long id) {
+        return operationRepository.findOperationById(id);
+    }
+
     public void createOperation(String name, String category, int amount, String type, Account account) {
         Operation operation = new Operation(name, category, amount, type, account);
+        operationRepository.save(operation);
+    }
+
+    public void saveOperation(Operation operation) {
         operationRepository.save(operation);
     }
 

@@ -28,6 +28,7 @@
               <p class="account-name" th:text="${account.name}">Название счета</p>
               <p class="account-amount" th:text="${account.amount + ' ' + account.currency}">Сумма</p>
             </div>
+            <button class="edit-account-button" th:data-id="${account.id}" title="Редактировать счет">&#9998;</button>
             <button class="delete-account-button" th:data-id="${account.id}" title="Удалить счет">&times;</button>
           </div>
         </li>
@@ -58,7 +59,8 @@
              th:style="${operation.type == 'income' ? 'color: #0c7b0c;' : ''}">Сумма</p>
           <p class="transaction-account" th:text="${operation.account.name}">Счет</p>
         </div>
-        <button class="delete-operation-button" th:data-id="${operation.id}" title="Удалить операцию">&times;</button>
+        <button class="edit-operation-button" th:data-id="${operation.id}" title="Редактировать операцию">&#9998;</button>
+        <button class="delete-operation-button" th:data-id="${operation.id}" th:data-amount="${operation.amount}" th:data-type="${operation.type}" title="Удалить операцию">&times;</button>
       </div>
     </div>
     <p class="no-transactions" th:unless="${not #lists.isEmpty(operations)}">На данный момент у вас не происходило операций на счетах</p>
@@ -93,7 +95,6 @@
     </div>
   </div>
 
-
   <div id="create-account-modal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
@@ -109,6 +110,54 @@
           <option value="€">Евро</option>
         </select>
         <button class="click-buttons" type="button" onclick="createNewAccount()">Отправить</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="edit-account-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <form id="edit-account-form">
+        <label for="edit-account-name">Название счета:</label>
+        <input type="text" id="edit-account-name" name="edit-account-name" autocomplete="off">
+        <label for="edit-account-amount">Сумма денег:</label>
+        <input type="text" id="edit-account-amount" name="edit-account-amount" autocomplete="off">
+        <label for="edit-account-currency">Валюта счета:</label>
+        <select id="edit-account-currency" name="edit-account-currency">
+          <option value="₽">Российский рубль</option>
+          <option value="$">Американский доллар</option>
+          <option value="€">Евро</option>
+        </select>
+        <button class="click-buttons" type="button" id="edit-account-button">Отправить</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="edit-operation-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <form id="edit-operation-form">
+        <label>Выберите операции:</label>
+        <div class="operation-buttons">
+          <button type="button" class="income-btn" onclick="selectOperationTypeForEdit('income')">Доход</button>
+          <button type="button" class="expense-btn" onclick="selectOperationTypeForEdit('expense')">Расход</button>
+        </div>
+        <label for="edit-operation-name">Название операции:</label>
+        <input type="text" id="edit-operation-name" name="edit-operation-name" autocomplete="off">
+        <label for="edit-operation-amount">Сумма операции:</label>
+        <input type="text" id="edit-operation-amount" name="edit-operation-amount" autocomplete="off">
+        <label for="edit-operation-category">Категория операции:</label>
+        <select id="edit-operation-category" name="edit-operation-category">
+          <option value="Продукты">Продукты</option>
+          <option value="Транспорт">Транспорт</option>
+          <option value="Развлечения">Развлечения</option>
+          <option value="Переводы">Перевод</option>
+        </select>
+        <label for="edit-operation-account">Выберите счет:</label>
+        <select id="edit-operation-account" name="edit-operation-account">
+          <option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}"></option>
+        </select>
+        <button class="click-buttons" type="button" id="edit-operation-button">Изменить операцию</button>
       </form>
     </div>
   </div>

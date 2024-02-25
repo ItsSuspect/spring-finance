@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class OperationRequest {
+    private Long operationId;
+
     @NotBlank
     private String name;
 
@@ -18,6 +20,14 @@ public class OperationRequest {
 
     @NotNull
     private Long accountId;
+
+    public Long getOperationId() {
+        return operationId;
+    }
+
+    public void setOperationId(Long operationId) {
+        this.operationId = operationId;
+    }
 
     public String getName() {
         return name;
