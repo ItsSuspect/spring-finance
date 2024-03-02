@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "operations")
 public class Operation {
@@ -26,6 +28,9 @@ public class Operation {
     @NotBlank
     private String type;
 
+    @Temporal(TemporalType.DATE)
+    private Date date;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
@@ -34,12 +39,21 @@ public class Operation {
 
     }
 
-    public Operation(String name, String category, int amount, String type, Account account) {
+    public Operation(String name, String category, int amount, String type, Account account, Date date) {
         this.name = name;
         this.category = category;
         this.amount = amount;
         this.type = type;
         this.account = account;
+        this.date = date;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public Long getId() {

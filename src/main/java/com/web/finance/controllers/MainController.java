@@ -19,9 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 public class MainController {
@@ -39,7 +37,9 @@ public class MainController {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Set<Account> accounts = accountService.findAccountsByUsername(username);
-        Set<Operation> operations = operationService.findOperationByUsername(username);
+        List<Operation> operations = operationService.findOperationByUsername(username);
+
+        operations.sort(Comparator.comparing(Operation::getDate).reversed());
 
         model.addAttribute("accounts", accounts);
         model.addAttribute("operations", operations);
@@ -86,7 +86,7 @@ public class MainController {
         account.setAmount(amount);
 
         accountService.saveAccount(account);
-        operationService.createOperation(operationRequest.getName(), operationRequest.getCategory(), operationRequest.getAmount(), operationRequest.getType(), account);
+        operationService.createOperation(operationRequest.getName(), operationRequest.getCategory(), operationRequest.getAmount(), operationRequest.getType(), account, operationRequest.getDate());
         return ResponseEntity.ok(new MessageResponse("Новая операция успешно создана"));
     }
 
@@ -138,6 +138,7 @@ public class MainController {
         operation.setName(operationRequest.getName());
         operation.setCategory(operationRequest.getCategory());
         operation.setAccount(account);
+        operation.setDate(operationRequest.getDate());
 
         accountService.saveAccount(account);
         operationService.saveOperation(operation);

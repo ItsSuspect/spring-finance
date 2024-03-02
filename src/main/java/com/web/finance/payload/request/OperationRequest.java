@@ -3,6 +3,8 @@ package com.web.finance.payload.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.Date;
+
 public class OperationRequest {
     private Long operationId;
 
@@ -19,7 +21,18 @@ public class OperationRequest {
     private String type;
 
     @NotNull
+    private Date date;
+
+    @NotNull
     private Long accountId;
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     public Long getOperationId() {
         return operationId;

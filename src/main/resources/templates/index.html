@@ -48,19 +48,28 @@
     <h2>Операции</h2>
     <button id="add-operation-button">Добавить новую операцию</button>
     <div class="transactions" th:if="${not #lists.isEmpty(operations)}">
-      <div class="transaction" th:each="operation : ${operations}">
-        <img class="transaction-icon" th:src="@{/images/main/dollar-icon.svg}" alt="Иконка транзакции">
-        <div class="transaction-details">
-          <p class="transaction-name" th:text="${operation.name}">Название операции</p>
-          <p class="transaction-category" th:text="${operation.category}">Категория</p>
+      <div th:each="operation, operationIndex : ${operations}">
+        <div th:if="${operationIndex.index == 0 or operation.date != operations[operationIndex.index - 1].date}">
+          <h3 th:text="${#dates.format(operation.date, 'dd MMMM yyyy')}">Операции за дату</h3>
         </div>
-        <div class="transaction-info">
-          <p class="transaction-amount" th:text="(${operation.type} == 'income' ? '+' : '-') + ${operation.amount} + ' ' + ${operation.account.currency}"
-             th:style="${operation.type == 'income' ? 'color: #0c7b0c;' : ''}">Сумма</p>
-          <p class="transaction-account" th:text="${operation.account.name}">Счет</p>
+        <div class="transaction">
+          <img class="transaction-icon" th:src="@{/images/main/dollar-icon.svg}" alt="Иконка транзакции">
+          <div class="transaction-details">
+            <p class="transaction-name" th:text="${operation.name}">Название операции</p>
+            <p class="transaction-category" th:text="${operation.category}">Категория</p>
+          </div>
+          <div class="transaction-info">
+            <p class="transaction-amount" th:data-type="${operation.type}" th:data-amount="${operation.amount}"
+               th:text="(${operation.type} == 'income' ? '+' : '-') + ${operation.amount} + ' ' + ${operation.account.currency}"
+               th:style="${operation.type == 'income' ? 'color: #0c7b0c;' : ''}">Сумма</p>
+            <p class="transaction-account" th:text="${operation.account.name}">Счет</p>
+          </div>
+          <button class="edit-operation-button" th:data-id="${operation.id}" title="Редактировать операцию">&#9998;
+          </button>
+          <button class="delete-operation-button" th:data-id="${operation.id}" th:data-amount="${operation.amount}"
+                  th:data-type="${operation.type}" title="Удалить операцию">&times;
+          </button>
         </div>
-        <button class="edit-operation-button" th:data-id="${operation.id}" title="Редактировать операцию">&#9998;</button>
-        <button class="delete-operation-button" th:data-id="${operation.id}" th:data-amount="${operation.amount}" th:data-type="${operation.type}" title="Удалить операцию">&times;</button>
       </div>
     </div>
     <p class="no-transactions" th:unless="${not #lists.isEmpty(operations)}">На данный момент у вас не происходило операций на счетах</p>
@@ -90,6 +99,9 @@
         <select id="new-operation-account" name="new-operation-account">
           <option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}"></option>
         </select>
+        <label for="new-operation-date">Дата операции:</label>
+        <input type="date" id="new-operation-date" name="new-operation-date">
+        <br>
         <button class="click-buttons" type="button" onclick="createNewOperation()">Отправить</button>
       </form>
     </div>

@@ -1,10 +1,25 @@
 //Реализация диаграммы
 document.addEventListener("DOMContentLoaded", function() {
+    const operationAmounts = document.querySelectorAll('.transaction-amount');
+    let totalIncome = 0;
+    let totalExpense = 0;
+
+    operationAmounts.forEach(function(operationInfo) {
+        const amount = parseFloat(operationInfo.getAttribute('data-amount'));
+        const type = operationInfo.getAttribute('data-type');
+
+        if (type === 'income') {
+            totalIncome += amount;
+        } else {
+            totalExpense += amount;
+        }
+    });
+
     const data = {
         labels: ['Доходы', 'Расходы'],
         datasets: [{
             label: 'Доходы и расходы',
-            data: [3000, 1500],
+            data: [totalIncome, totalExpense],
             backgroundColor: [
                 'rgba(75, 192, 192, 0.2)',
                 'rgba(255, 99, 132, 0.2)'
@@ -254,6 +269,9 @@ function createNewOperation() {
     const amount = document.getElementById("new-operation-amount").value;
     const category = document.getElementById("new-operation-category").value;
     const accountId = document.getElementById("new-operation-account").value;
+    const date = document.getElementById("new-operation-date").value;
+
+    console.log(date)
 
     if (!selectedOperationType) {
         alert('Пожалуйста, выберите тип операции (Доход или Расход)');
@@ -265,6 +283,7 @@ function createNewOperation() {
         "amount": amount,
         "category": category,
         "accountId": accountId,
+        "date": date,
         "type": selectedOperationType
     };
 
